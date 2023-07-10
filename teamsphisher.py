@@ -687,15 +687,14 @@ if __name__ == "__main__":
     # Authenticate and fetch our tokens and sender info
     bToken, skypeToken, sharepointToken, senderInfo = authenticate(args)
 
-    # Assemble Sharepoint name + Senders drive for later use
-    # If user-specified sharepoint was provided, assemble using that value otherwise do so using senderInfo
+    # SharePoint custom tenant name doesn't change UPN.
+    senderDrive = senderInfo.get('userPrincipalName').replace("@", "_").replace(".", "_").lower()
+    # Assemble Sharepoint name
     if args.sharepoint:
         senderSharepointURL = "https://%s-my.sharepoint.com" % (args.sharepoint)
-        senderDrive = "%s_%s_onmicrosoft_com" % (args.username.split("@")[0].replace(".", "_").lower(), args.sharepoint)
     else:
         senderSharepointURL = "https://%s-my.sharepoint.com" % senderInfo.get('tenantName')
-        senderDrive = senderInfo.get('userPrincipalName').replace("@", "_").replace(".", "_").lower()
-
+        
     # Upload file to sharepoint that will be sent as an attachment in chats
     uploadInfo = uploadFile(sharepointToken, senderSharepointURL, senderDrive, args.attachment)
 
